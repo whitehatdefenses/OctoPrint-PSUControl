@@ -422,6 +422,54 @@ class PSUControl(octoprint.plugin.StartupPlugin,
         elif command == 'getPSUState':
             return jsonify(isPSUOn=self.isPSUOn)
 
+    def cli_commands(self, cli_group, pass_octoprint_ctx, *args, **kwargs):
+        import click
+        import sys
+        import requests.exceptions
+        from octoprint_client import Client, build_base_url
+
+        def _api_command(command):
+            host = cli_group.settings.get(["server", "host"])
+            host = host if host != "0.0.0.0" else "127.0.0.1"
+
+            port = cli_group.settings.getInt(["server", "port"])
+
+            baseurl = build_base_url(host=host, port=port, prefix="/api")
+
+            api_key = cli_group.settings.get(["api", "key"])
+
+            client = Client(baseurl, api_key)
+            r = client.post_command("plugin/psucontrol", command)
+            try:
+                r.raise_for_status()
+            except requests.exceptions.HTTPError as e:
+                click.echo("HTTP Error, got {}".format(e))
+                sys.exit(1)   
+        
+            return r
+
+        @click.command("on")
+        def turnPSUOn_command():
+            """Turn the PSU On"""
+            _api_command('turnPSUOn')
+
+        @click.command("off")
+        def turnPSUOff_command():
+            """Turn the PSU Off"""
+            _api_command('off')
+
+        @click.command("toggle")
+        def togglePSU_command():
+            """Toggle the PSU On/Off"""
+            _api_command('togglePSU')
+
+        @click.command("status")
+        def getPSUState_command():
+            """Get the current PSU status"""
+            print _api_command('getPSUState').__dict__
+
+        return [turnPSUOn_command, turnPSUOff_command, togglePSU_command, getPSUState_command]
+
     def get_settings_defaults(self):
         return dict(
             GPIOMode = 'BOARD',
@@ -563,5 +611,6 @@ def __plugin_load__():
     global __plugin_hooks__
     __plugin_hooks__ = {
         "octoprint.comm.protocol.gcode.queuing": __plugin_implementation__.hook_gcode_queuing,
-        "octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information
+        "octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information,
+        "octoprint.cli.commands": __plugin_implementation__.cli_commands
     }
