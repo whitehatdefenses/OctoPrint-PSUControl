@@ -1,17 +1,18 @@
 # OctoPrint PSU Control
 This OctoPrint plugin controls an ATX/AUX power supply to help reduce power consumption and noise when the printer is not in use.
 
-Power supply can be automatically switched on when user specified commands are sent to the printer and/or switched off when idle.
-
-Supports Commands (G-Code or System) or GPIO to switch power supply on/off.
-
 ![PSUControl](psucontrol_navbar_settings.png?raw=true)
  
- 
-## Setup
+## Features
+- Power switching via G-Code, System Command, or GPIO*(Raspberry Pi Only)*.
+- Power sensing via System Command or GPIO*(Raspberry Pi Only)*.
+- Visible status indicator in the navigation bar.
+- Psuedo On/Off G-Code commands when using System Command or GPIO switching.
+- Automatically turn PSU when certain G-Code commands are sent.
+- Automatic PSU shutoff when idle.
 
+## Setup
 Install the plugin using Plugin Manager from Settings
- 
  
 ## Settings
 See the [Wiki](https://github.com/kantlivelong/OctoPrint-PSUControl/wiki/Settings)
