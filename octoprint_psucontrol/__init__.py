@@ -419,14 +419,15 @@ class PSUControl(octoprint.plugin.StartupPlugin,
         heaters = self._printer.get_current_temperatures()
         
         for heater in heaters.keys():
-            if float(heaters.get(heater)["target"]) != 0:
-                self._logger.info("Turning off heater: %s" % heater)
-                self._skipIdleTimer = True
-                self._printer.set_temperature(heater, 0)
-                self._skipIdleTimer = False
-            else:
-                self._logger.debug("Heater %s already off." % heater)
-        
+            target = heaters.get(heater)["target"]
+            if target is not None:
+                if float(target) != 0:
+                    self._logger.info("Turning off heater: %s" % heater)
+                    self._skipIdleTimer = True
+                    self._printer.set_temperature(heater, 0)
+                    self._skipIdleTimer = False
+                else:
+                    self._logger.debug("Heater %s already off." % heater)
         while True:
             if not self._waitForHeaters:
                 return False
