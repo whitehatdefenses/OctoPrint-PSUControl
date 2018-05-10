@@ -98,6 +98,7 @@ class PSUControl(octoprint.plugin.StartupPlugin,
         self.pseudoOffGCodeCommand = ''
         self.postOnDelay = 0.0
         self.autoOn = False
+        self.autoOnServerBoot = False
         self.autoOnTriggerGCodeCommands = ''
         self._autoOnTriggerGCodeCommandsArray = []
         self.enablePowerOffWarningDialog = True
@@ -183,6 +184,9 @@ class PSUControl(octoprint.plugin.StartupPlugin,
 
         self.autoOn = self._settings.get_boolean(["autoOn"])
         self._logger.debug("autoOn: %s" % self.autoOn)
+        
+        self.autoOnServerBoot = self._settings.get_boolean(["autoOnServerBoot"])
+        self._logger.debug("autoOnServerBoot: %s" % self.autoOnServerBoot)
 
         self.autoOnTriggerGCodeCommands = self._settings.get(["autoOnTriggerGCodeCommands"])
         self._autoOnTriggerGCodeCommandsArray = self.autoOnTriggerGCodeCommands.split(',')
@@ -226,6 +230,9 @@ class PSUControl(octoprint.plugin.StartupPlugin,
         self._check_psu_state_thread.start()
 
         self._start_idle_timer()
+        
+        if self.autoOnServerBoot == True:
+            self.turn_psu_on()
 
     def _gpio_board_to_bcm(self, pin):
         if GPIO.RPI_REVISION == 1:
@@ -603,6 +610,7 @@ class PSUControl(octoprint.plugin.StartupPlugin,
             senseSystemCommand = '',
             autoOn = False,
             autoOnTriggerGCodeCommands = "G0,G1,G2,G3,G10,G11,G28,G29,G32,M104,M106,M109,M140,M190",
+            autoOnServerBoot = False,
             enablePowerOffWarningDialog = True,
             powerOffWhenIdle = False,
             idleTimeout = 30,
@@ -640,6 +648,7 @@ class PSUControl(octoprint.plugin.StartupPlugin,
         self.senseGPIOPinPUD = self._settings.get(["senseGPIOPinPUD"])
         self.senseSystemCommand = self._settings.get(["senseSystemCommand"])
         self.autoOn = self._settings.get_boolean(["autoOn"])
+        self.autoOnServerBoot = self._settings.get_boolean(["autoOnServerBoot"])
         self.autoOnTriggerGCodeCommands = self._settings.get(["autoOnTriggerGCodeCommands"])
         self._autoOnTriggerGCodeCommandsArray = self.autoOnTriggerGCodeCommands.split(',')
         self.powerOffWhenIdle = self._settings.get_boolean(["powerOffWhenIdle"])
