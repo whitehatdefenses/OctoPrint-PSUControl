@@ -136,7 +136,12 @@
     <div class="control-group">
         <div class="controls">
             <label class="checkbox">
-            <input type="checkbox" data-bind="checked: settings.plugins.psucontrol.autoOn"> Automatically turn PSU ON
+            <input type="checkbox" data-bind="checked: settings.plugins.psucontrol.autoOnServerBoot"> Turn PSU ON server startup
+            </label>
+        </div>
+        <div class="controls">
+            <label class="checkbox">
+            <input type="checkbox" data-bind="checked: settings.plugins.psucontrol.autoOn"> Turn PSU ON with Gcode commands
             </label>
         </div>
     </div>
